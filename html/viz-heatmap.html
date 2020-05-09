@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Odyssi events</title>
+    <script src="https://dlo.center/js/vega@5.10.0.js"></script>
+    <script src="https://dlo.center/js/vega-lite@4.8.1.js"></script>
+    <script src="https://dlo.center/js/vega-embed@6.5.1.js"></script>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://dlo.center/img/lab.png" />
+</head>
+
+<body>
+    <div id="viz"></div>
+    <script type="text/javascript">
+        var viz = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+            "data": {
+                "url": "https://dlo.center/data/odyssi_days.csv"
+            },
+            "title": "Odyssi : jours avec des problèmes",
+            "config": {
+                "view": {
+                    "strokeWidth": 0,
+                    "step": 13
+                },
+                "axis": {
+                    "domain": false
+                }
+            },
+            "vconcat": [{
+                "transform": [{
+                    "filter": {
+                        "field": "day",
+                        "timeUnit": "utcyear",
+                        "equal": 2020
+                    }
+                }],
+                "mark": "rect",
+                "encoding": {
+                    "x": {
+                        "field": "day",
+                        "timeUnit": "date",
+                        "type": "ordinal",
+                        "title": "Day",
+                        "axis": false
+                    },
+                    "y": {
+                        "field": "day",
+                        "timeUnit": "month",
+                        "type": "ordinal",
+                        "title": "2020",
+                        "sort": "descending"
+                    },
+                    "color": {
+                        "field": "reason",
+                        "type": "nominal",
+                        "legend": {
+                            "title": "Raisons",
+                            "orient": "top",
+                            "labelFontSize": 15
+                        },
+                        "sort": ["secheresse", "casse", "travaux", "meteo", "approvisionnement", "unknown"]
+                    }
+                }
+            }],
+            "config": {
+                "style": {
+                    "cell": {
+                        "stroke": "transparent"
+                    }
+                },
+                "concat": {
+                    "spacing": -1
+                }
+            }
+
+        }
+        var single = Object.assign({}, viz['vconcat'][0]);
+        var l = [];
+        for (let y = 2019; y >= 2013; y--) {
+            var copied = JSON.parse(JSON.stringify(single));
+            copied['encoding']['y']['title'] = y.toString();
+            copied['transform'][0]['filter']['equal'] = y;
+            viz['vconcat'].push(copied);
+        }
+        vegaEmbed('#viz', viz);
+    </script>
+</body>
+
+</html>
